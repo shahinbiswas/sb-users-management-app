@@ -6,15 +6,14 @@ import User from './User';
 const Users = (props) => {
   return (
     <section className="users">
-      {props.users.map((user) => (
-        <User key={user.id} {...user} />
-      ))}
+      {props.users &&
+        props.users.map((user) => <User key={user.id} {...user} />)}
     </section>
   );
 };
 
 Users.propTypes = {
-  users: PropTypes.array
+  users: PropTypes.array,
 };
 
 export default Users;

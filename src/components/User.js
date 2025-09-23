@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const User = ({ id, name, email, phone }) => {
+const User = ({ id, lastName, company, email, phone }) => {
   return (
     <article className="user">
       <h3>{id}</h3>
-      <h3 className="user__name">{name}</h3>
+      <h3 className="user__name">{lastName}</h3>
+      {company && <p>{company.title}</p>}
       <p className="user__email">{email}</p>
       <a className="user__phone" href={'tel:+' + phone}>
         {phone}
@@ -16,9 +17,10 @@ const User = ({ id, name, email, phone }) => {
 
 User.propTypes = {
   id: PropTypes.number,
-  name: PropTypes.string,
+  lastName: PropTypes.string,
+  company: PropTypes.string,
   email: PropTypes.string,
-  phone: PropTypes.string
+  phone: PropTypes.string,
 };
 
 export default User;
