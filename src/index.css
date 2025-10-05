@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --border-radius: 0.6rem;
   --text-color: #fff;
 }
@@ -77,4 +77,4 @@ body {
     width: 100%;
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
-}
+} */

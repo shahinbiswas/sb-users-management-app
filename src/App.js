@@ -1,41 +1,91 @@
 import React, { useEffect, useState } from 'react';
-
-import Users from './components/Users';
+import axios from 'axios';
+import './App.css'; // নিচে CSS দেওয়া আছে
 
 const App = () => {
-  // step1 : declare three states here : users, isLoading, error
-  const [users, setUsers] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [editId, setEditId] = useState(null);
 
-  // step2 : use useEffect for fetching the data including updating isLoading and error states
+  // 🔹 Read users
+  const getAllUsers = async () => {
+    const response = await axios.get('http://localhost:3001/users');
+    setUsers(response.data);
+  };
+
+  // 🔹 Create / Update users
+  const addUser = async (e) => {
+    e.preventDefault();
+    if (editId) {
+      await axios.put(`http://localhost:3001/users/${editId}`, formData);
+      setEditId(null);
+    } else {
+      await axios.post('http://localhost:3001/users', formData);
+    }
+    setFormData({ name: '', email: '' });
+    getAllUsers();
+  };
+
+  // 🔹 Delete users
+  const deleteUser = async (id) => {
+    await axios.delete(`http://localhost:3001/users/${id}`);
+    getAllUsers();
+  };
+
+  // 🔹 Edit user
+  const editUser = (user) => {
+    setFormData({ name: user.name, email: user.email });
+    setEditId(user.id);
+  };
+
   useEffect(() => {
-    fetch('https://dummyjson.com/users')
-      .then((res) => {
-        if (!res.ok) {
-          throw Error('User is not fetch successfully');
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        setUsers(data.users);
-        setIsLoading(false);
-        setError(null);
-      })
-      .catch((error) => {
-        setError(error.message);
-        setIsLoading(false);
-      });
+    getAllUsers();
   }, []);
 
   return (
     <div className="container">
-      <h1 className="title">Users Management App</h1>
-      {isLoading && <p>Loading users...</p>}
-      {error && <p>{error}</p>}
-      <Users users={users} />
-      {/* step3 : pass the users data to Users component  */}
+      <h2 className="title">👥 User Management App</h2>
+
+      {/* Form */}
+      <form className="form" onSubmit={addUser}>
+        <input
+          type="text"
+          value={formData.name}
+          placeholder="Enter Name"
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <input
+          type="text"
+          value={formData.email}
+          placeholder="Enter Email"
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        <button type="submit" className="btn add-btn">
+          {editId ? 'Update User' : 'Add User'}
+        </button>
+      </form>
+
+      <div className="user-list">
+        {users.map((user) => (
+          <article key={user.id} className="user-card">
+            <div>
+              <h3>{user.name}</h3>
+              <p>{user.email}</p>
+            </div>
+            <div className="btn-group">
+              <button className="btn edit-btn" onClick={() => editUser(user)}>
+                ✏️ Edit
+              </button>
+              <button
+                className="btn delete-btn"
+                onClick={() => deleteUser(user.id)}
+              >
+                🗑️ Delete
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 };
